@@ -1,42 +1,49 @@
 <!DOCTYPE html>
 <html>
-	<form action="/cgi-bin/insert.cgi" method="post">
-		<div><label for='plant_name'>plant_name:</label><input id='plant_name' name='plant_name' maxlength='30' size='30'></div>
-		<div><label for='latin_name'>latin_name:</label><input id='latin_name' name='latin_name' maxlength='30' size='30'></div>
-		<div><label for='height'>height:</label><input id='height' name='height' maxlength='5' size='5'></div>
-		<div><label for='width'>width:</label><input id='width' name='width' maxlength='5' size='5'></div>
-		<div><label for='planting_depth'>planting_depth:</label><input id='planting_depth' name='planting_depth' maxlength='5' size='5'></div>
-		<div><label for='seed_size'>seed_size:</label><input id='seed_size' name='seed_size' maxlength='5' size='5'></div>
-		<div><label for='seed_need_light'>seed_need_light:</label><input id='seed_need_light' name='seed_need_light' maxlength='3' size='3'></div>
-		<div><label for='seed_scarification'>seed_scarification:</label><input id='seed_scarification' name='seed_scarification' maxlength='3' size='3'></div>
-		<div><label for='ph'>ph:</label><input id='ph' name='ph' maxlength='5' size='5'></div>
-		<div><label for='ec'>ec:</label><input id='ec' name='ec' maxlength='5' size='5'></div>
-		<div><label for='day_light_interval'>day_light_interval:</label><input id='day_light_interval' name='day_light_interval' maxlength='5' size='5'></div>
-		<div><label for='photoperiod_hours'>photoperiod_hours:</label><input id='photoperiod_hours' name='photoperiod_hours' maxlength='5' size='5'></div>
-		<div><label for='light_lower'>light_lower:</label><input id='light_lower' name='light_lower' maxlength='5' size='5'></div>
-		<div><label for='light_optimal'>light_optimal:</label><input id='light_optimal' name='light_optimal' maxlength='5' size='5'></div>
-		<div><label for='light_upper'>light_upper:</label><input id='light_upper' name='light_upper' maxlength='5' size='5'></div>
-		<div><label for='nitrogen_lower'>nitrogen_lower:</label><input id='nitrogen_lower' name='nitrogen_lower' maxlength='5' size='5'></div>
-		<div><label for='nitrogen_optimal'>nitrogen_optimal:</label><input id='nitrogen_optimal' name='nitrogen_optimal' maxlength='5' size='5'></div>
-		<div><label for='nitrogen_upper'>nitrogen_upper:</label><input id='nitrogen_upper' name='nitrogen_upper' maxlength='5' size='5'></div>
-		<div><label for='phosphorus_lower'>phosphorus_lower:</label><input id='phosphorus_lower' name='phosphorus_lower' maxlength='5' size='5'></div>
-		<div><label for='phosphorus_optimal'>phosphorus_optimal:</label><input id='phosphorus_optimal' name='phosphorus_optimal' maxlength='5' size='5'></div>
-		<div><label for='phosphorus_upper'>phosphorus_upper:</label><input id='phosphorus_upper' name='phosphorus_upper' maxlength='5' size='5'></div>
-		<div><label for='potassium_lower'>potassium_lower:</label><input id='potassium_lower' name='potassium_lower' maxlength='5' size='5'></div>
-		<div><label for='potassium_optimal'>potassium_optimal:</label><input id='potassium_optimal' name='potassium_optimal' maxlength='5' size='5'></div>
-		<div><label for='potassium_upper'>potassium_upper:</label><input id='potassium_upper' name='potassium_upper' maxlength='5' size='5'></div>
-		<div><label for='germination_lower'>germination_lower:</label><input id='germination_lower' name='germination_lower' maxlength='5' size='5'></div>
-		<div><label for='germination_normal'>germination_normal:</label><input id='germination_normal' name='germination_normal' maxlength='5' size='5'></div>
-		<div><label for='germination_upper'>germination_upper:</label><input id='germination_upper' name='germination_upper' maxlength='5' size='5'></div>
-		<div><label for='transplanting_lower'>transplanting_lower:</label><input id='transplanting_lower' name='transplanting_lower' maxlength='5' size='5'></div>
-		<div><label for='transplanting_optimal'>transplanting_optimal:</label><input id='transplanting_optimal' name='transplanting_optimal' maxlength='5' size='5'></div>
-		<div><label for='transplanting_upper'>transplanting_upper:</label><input id='transplanting_upper' name='transplanting_upper' maxlength='5' size='5'></div>
-		<div><label for='maturity_lower'>maturity_lower:</label><input id='maturity_lower' name='maturity_lower' maxlength='5' size='5'></div>
-		<div><label for='maturity_optimal'>maturity_optimal:</label><input id='maturity_optimal' name='maturity_optimal' maxlength='5' size='5'></div>
-		<div><label for='maturity_upper'>maturity_upper:</label><input id='maturity_upper' name='maturity_upper' maxlength='5' size='5'></div>
-		<div><label for='frost_tolerance'>frost_tolerance:</label><input id='frost_tolerance' name='frost_tolerance' maxlength='3' size='3'></div>
-		<div><label for='flowering'>flowering:</label><input id='flowering' name='flowering' maxlength='5' size='5'></div>
-		<div><label for='pollination_primary'>pollination_primary:</label><input id='pollination_primary' name='pollination_primary' maxlength='30' size='30'></div>
-		<div><label for='pollination_secondary'>pollination_secondary:</label><input id='pollination_secondary' name='pollination_secondary' maxlength='30' size='30'></div>
-	</form>
+	<heading>
+		<title>Green House Plant Database</title>
+	</heading>
+	<body>
+		<h1>Green House Plant Database</h1>
+		<form action="/cgi-bin/insert.cgi" method="post">
+			<div><label for='plant_name'>plant_name&nbsp;</label><input id='plant_name' name='plant_name' maxlength='30' size='30'></div>
+			<div><label for='latin_name'>latin_name&nbsp;</label><input id='latin_name' name='latin_name' maxlength='30' size='30'></div>
+			<div><label for='height'>height&nbsp;</label><input id='height' name='height' maxlength='5' size='5'></div>
+			<div><label for='width'>width&nbsp;</label><input id='width' name='width' maxlength='5' size='5'></div>
+			<div><label for='planting_depth'>planting_depth&nbsp;</label><input id='planting_depth' name='planting_depth' maxlength='5' size='5'></div>
+			<div><label for='seed_size'>seed_size&nbsp;</label><input id='seed_size' name='seed_size' maxlength='5' size='5'></div>
+			<div><label for='seed_need_light'>seed_need_light&nbsp;</label><input id='seed_need_light' name='seed_need_light' maxlength='3' size='3'></div>
+			<div><label for='seed_scarification'>seed_scarification&nbsp;</label><input id='seed_scarification' name='seed_scarification' maxlength='3' size='3'></div>
+			<div><label for='ph'>ph&nbsp;</label><input id='ph' name='ph' maxlength='5' size='5'></div>
+			<div><label for='ec'>ec&nbsp;</label><input id='ec' name='ec' maxlength='5' size='5'></div>
+			<div><label for='day_light_interval'>day_light_interval&nbsp;</label><input id='day_light_interval' name='day_light_interval' maxlength='5' size='5'></div>
+			<div><label for='photoperiod_hours'>photoperiod_hours&nbsp;</label><input id='photoperiod_hours' name='photoperiod_hours' maxlength='5' size='5'></div>
+			<div><label for='light_lower'>light_lower&nbsp;</label><input id='light_lower' name='light_lower' maxlength='5' size='5'></div>
+			<div><label for='light_optimal'>light_optimal&nbsp;</label><input id='light_optimal' name='light_optimal' maxlength='5' size='5'></div>
+			<div><label for='light_upper'>light_upper&nbsp;</label><input id='light_upper' name='light_upper' maxlength='5' size='5'></div>
+			<div><label for='nitrogen_lower'>nitrogen_lower&nbsp;</label><input id='nitrogen_lower' name='nitrogen_lower' maxlength='5' size='5'></div>
+			<div><label for='nitrogen_optimal'>nitrogen_optimal&nbsp;</label><input id='nitrogen_optimal' name='nitrogen_optimal' maxlength='5' size='5'></div>
+			<div><label for='nitrogen_upper'>nitrogen_upper&nbsp;</label><input id='nitrogen_upper' name='nitrogen_upper' maxlength='5' size='5'></div>
+			<div><label for='phosphorus_lower'>phosphorus_lower&nbsp;</label><input id='phosphorus_lower' name='phosphorus_lower' maxlength='5' size='5'></div>
+			<div><label for='phosphorus_optimal'>phosphorus_optimal&nbsp;</label><input id='phosphorus_optimal' name='phosphorus_optimal' maxlength='5' size='5'></div>
+			<div><label for='phosphorus_upper'>phosphorus_upper&nbsp;</label><input id='phosphorus_upper' name='phosphorus_upper' maxlength='5' size='5'></div>
+			<div><label for='potassium_lower'>potassium_lower&nbsp;</label><input id='potassium_lower' name='potassium_lower' maxlength='5' size='5'></div>
+			<div><label for='potassium_optimal'>potassium_optimal&nbsp;</label><input id='potassium_optimal' name='potassium_optimal' maxlength='5' size='5'></div>
+			<div><label for='potassium_upper'>potassium_upper&nbsp;</label><input id='potassium_upper' name='potassium_upper' maxlength='5' size='5'></div>
+			<div><label for='germination_lower'>germination_lower&nbsp;</label><input id='germination_lower' name='germination_lower' maxlength='5' size='5'></div>
+			<div><label for='germination_normal'>germination_normal&nbsp;</label><input id='germination_normal' name='germination_normal' maxlength='5' size='5'></div>
+			<div><label for='germination_upper'>germination_upper&nbsp;</label><input id='germination_upper' name='germination_upper' maxlength='5' size='5'></div>
+			<div><label for='transplanting_lower'>transplanting_lower&nbsp;</label><input id='transplanting_lower' name='transplanting_lower' maxlength='5' size='5'></div>
+			<div><label for='transplanting_optimal'>transplanting_optimal&nbsp;</label><input id='transplanting_optimal' name='transplanting_optimal' maxlength='5' size='5'></div>
+			<div><label for='transplanting_upper'>transplanting_upper&nbsp;</label><input id='transplanting_upper' name='transplanting_upper' maxlength='5' size='5'></div>
+			<div><label for='maturity_lower'>maturity_lower&nbsp;</label><input id='maturity_lower' name='maturity_lower' maxlength='5' size='5'></div>
+			<div><label for='maturity_optimal'>maturity_optimal&nbsp;</label><input id='maturity_optimal' name='maturity_optimal' maxlength='5' size='5'></div>
+			<div><label for='maturity_upper'>maturity_upper&nbsp;</label><input id='maturity_upper' name='maturity_upper' maxlength='5' size='5'></div>
+			<div><label for='frost_tolerance'>frost_tolerance&nbsp;</label><input id='frost_tolerance' name='frost_tolerance' maxlength='3' size='3'></div>
+			<div><label for='flowering'>flowering&nbsp;</label><input id='flowering' name='flowering' maxlength='5' size='5'></div>
+			<div><label for='pollination_primary'>pollination_primary&nbsp;</label><input id='pollination_primary' name='pollination_primary' maxlength='30' size='30'></div>
+			<div><label for='pollination_secondary'>pollination_secondary&nbsp;</label><input id='pollination_secondary' name='pollination_secondary' maxlength='30' size='30'></div>
+			<div><input type="submit" value="Insert"></div>
+		</form>
+	</body>
 </html>
