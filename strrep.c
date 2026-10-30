@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
-char * strrep(char *string, const char *search, const char *replace) {
+char * strrep(char *string, const char *search, const char *replace)
+{
 	int length = 0;
 	int offset = 0;
 	int replace_length = strlen(replace);
@@ -25,6 +26,8 @@ char * strrep(char *string, const char *search, const char *replace) {
 		offset += replace_length;
 		strcpy(buffer, p + search_length);
 	}
+	strcpy(result + offset, buffer);
+	
 	free(b);
 	return result;
 }

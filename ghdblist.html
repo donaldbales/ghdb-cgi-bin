@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<heading>
+		<title>Green House Plant Database</title>
+	</heading>
+	<body style="font-family:helvetica">
+		<table border="0px" width="100%"><tr><td width="10%"></td><td width="80%">
+		<div align="center">
+			<b>Green House Plant Database</b>
+		<table>
+			<tr>
+				<th width="250px">
+					Plant Name
+				</th>
+				<th width="250px">
+					Latin Name
+				</th>
+				<th width="50px">
+				</th>
+				<th width="50px">
+				</th>
+			</tr>
+			<!--LIST-->
+			<tr>
+				<td width="250px">
+				</td>
+				<td width="250px">
+				</td>
+				<td align="right" width="50px">
+					<form action="/cgi-bin/add.cgi" method="post">
+						<input id="add" name="add" type="submit" value="Add">
+					</form>
+				</td>
+				<td width="50px">
+					<form action="/cgi-bin/find.cgi" method="post">
+						<input id="add" name="add" type="submit" value="Find">
+					</form>
+				</td>
+			</tr>
+		</table>
+		</div>
+		</td><td align="right" valign="top" width="10%"><!--MODE--></td></tr></table>
+		<b><!--MSG--></b>
+	</body>
+</html>

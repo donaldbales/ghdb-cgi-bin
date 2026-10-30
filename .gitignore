@@ -1,6 +1,7 @@
 # My binaries
 html_encode
 strrep
+url_decode
 *.cgi
 
 # Prerequisites
