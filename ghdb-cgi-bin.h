@@ -1,5 +1,5 @@
-#ifndef __GHDB_H
-#define __GHDB_H
+#ifndef __GHDB_CGI_BIN_H
+#define __GHDB_CGI_BIN_H
 
 #define PLANT_NAME_FIELD               0
 #define LATIN_NAME_FIELD               1
@@ -86,6 +86,12 @@ struct FIELD
 	enum_field_types mst;
 };
 
+struct KEY_VALUE
+{
+	char *key;
+	char *value;
+};
+
 struct FIELD fields[NUM_FIELDS] = 
 {
 	{ "plant_name", "{plant_name}", MYSQL_TYPE_STRING },
@@ -126,49 +132,117 @@ struct FIELD fields[NUM_FIELDS] =
 	{ "pollination_primary", "{pollination_primary}", MYSQL_TYPE_STRING },
 	{ "pollination_secondary", "{pollination_secondary}", MYSQL_TYPE_STRING }
 };
-/*
-struct RECORD
+
+char *ghdb_select = 
+	"select "
+		"plant_name, "
+		"latin_name, "
+		"height, "
+		"width, "
+		"planting_depth, "
+		"seed_size, "
+		"seed_need_light, "
+		"seed_scarification, "
+		"ph, "
+		"ec, "
+		"day_light_interval, "
+		"photoperiod_hours, "
+		"light_lower, "
+		"light_optimal, "
+		"light_upper, "
+		"nitrogen_lower, "
+		"nitrogen_optimal, "
+		"nitrogen_upper, "
+		"phosphorus_lower, "
+		"phosphorus_optimal, "
+		"phosphorus_upper, "
+		"potassium_lower, "
+		"potassium_optimal, "
+		"potassium_upper, "
+		"germination_lower, "
+		"germination_normal, "
+		"germination_upper, "
+		"transplanting_lower, "
+		"transplanting_optimal, "
+		"transplanting_upper, "
+		"maturity_lower, "
+		"maturity_optimal, "
+		"maturity_upper, "
+		"frost_tolerance, "
+		"flowering, "
+		"pollination_primary, "
+		"pollination_secondary "
+	"from ghdb where ";
+
+char * html_encode(char *string)
 {
-	char plant_name[PLANT_NAME_LENGTH + 1];
-	char latin_name[LATIN_NAME_LENGTH + 1];
-	char height[HEIGHT_LENGTH + 1];
-	char width[WIDTH_LENGTH + 1];
-	char planting_depth[PLANTING_DEPTH_LENGTH + 1];
-	char seed_size[SEED_SIZE_LENGTH + 1];
-	char seed_need_light[SEED_NEED_LIGHT_LENGTH + 1];
-	char seed_scarification[SEED_SCARIFICATION_LENGTH + 1];
-	char ph[PH_LENGTH + 1];
-	char ec[EC_LENGTH + 1];
-	char day_light_interval[DAY_LIGHT_INTERVAL_LENGTH + 1];
-	char photoperiod_hours[PHOTOPERIOD_HOURS_LENGTH + 1];
-	char light_lower[LIGHT_LOWER_LENGTH + 1];
-	char light_optimal[LIGHT_OPTIMAL_LENGTH + 1];
-	char light_upper[LIGHT_UPPER_LENGTH + 1];
-	char nitrogen_lower[NITROGEN_LOWER_LENGTH + 1];
-	char nitrogen_optimal[NITROGEN_OPTIMAL_LENGTH + 1];
-	char nitrogen_upper[NITROGEN_UPPER_LENGTH + 1];
-	char phosphorus_lower[PHOSPHORUS_LOWER_LENGTH + 1];
-	char phosphorus_optimal[PHOSPHORUS_OPTIMAL_LENGTH + 1];
-	char phosphorus_upper[PHOSPHORUS_UPPER_LENGTH + 1];
-	char potassium_lower[POTASSIUM_LOWER_LENGTH + 1];
-	char potassium_optimal[POTASSIUM_OPTIMAL_LENGTH + 1];
-	char potassium_upper[POTASSIUM_UPPER_LENGTH + 1];
-	char germination_lower[GERMINATION_LOWER_LENGTH + 1];
-	char germination_normal[GERMINATION_NORMAL_LENGTH + 1];
-	char germination_upper[GERMINATION_UPPER_LENGTH + 1];
-	char transplanting_lower[TRANSPLANTING_LOWER_LENGTH + 1];
-	char transplanting_optimal[TRANSPLANTING_OPTIMAL_LENGTH + 1];
-	char transplanting_upper[TRANSPLANTING_UPPER_LENGTH + 1];
-	char maturity_lower[MATURITY_LOWER_LENGTH + 1];
-	char maturity_optimal[MATURITY_OPTIMAL_LENGTH + 1];
-	char maturity_upper[MATURITY_UPPER_LENGTH + 1];
-	char frost_tolerance[FROST_TOLERANCE_LENGTH + 1];
-	char flowering[FLOWERING_LENGTH + 1];
-	char pollination_primary[POLLINATION_PRIMARY_LENGTH + 1];
-	char pollination_secondary[POLLINATION_SECONDARY_LENGTH + 1];
-};
-*/
-char * html_encode(char *string);
+	int string_length = strlen(string);
+	char c;
+	char *p;
+	char *result = NULL;
+	int result_length = string_length;
+	int i = 0;
+	for (i=0; i<string_length; i++)
+	{
+		c = *(string + i);
+		//printf("%c\n", c);
+		switch (c)
+		{
+			case '<':
+				result_length += 3;
+				break;
+			case '>':
+				result_length += 3;
+				break;
+			case '&':
+				result_length += 4;
+				break;
+			case '"':
+				result_length += 5;
+				break;
+			case '\'':
+				result_length += 5;
+				break;
+		}
+	}
+	result = malloc(result_length + 1);
+	p = result;
+	for (i=0; i<string_length; i++)
+	{
+		c = *(string + i);
+		//printf("%c\n", c);
+		switch (c)
+		{
+			case '<':
+				strcat(p, "&lt;");
+				p += 4;
+				break;
+			case '>':
+				strcat(p, "&gt;");
+				p += 4;
+				break;
+			case '&':
+				strcat(p, "&amp;");
+				p += 5;
+				break;
+			case '"':
+				strcat(p, "&quot;");
+				p += 6;
+				break;
+			case '\'':
+				strcat(p, "&apos;");
+				p += 6;
+				break;
+			default:
+				*p = c;
+				p += 1;
+				break;
+		}
+	}
+
+	return result;
+}
+
 char * strrep(char *string, const char *search, const char *replace)
 {
 	int length = 0;
@@ -247,7 +321,7 @@ char * url_decode(char *string)
 					if (isxdigit(c1) &&
 						isxdigit(c2))
 					{
-						result_length +- 2;
+						result_length += 2;
 					}
 				}
 				break;
@@ -294,18 +368,143 @@ char * url_decode(char *string)
 	return result;
 }
 
-int field_index(char *name)
+int get_field_index(char *name)
 {
-	//printf("name=\"%s\"\n", name);
 	for (int i = 0; i < NUM_FIELDS; i++)
 	{
-		//printf("fields[i].n=\"%s\"\n", fields[i].n);
 		if (strcmp(fields[i].n, name) == 0)
 		{
 			return i;
 		}
 	}
+
 	return -1;
+}
+
+MYSQL * get_mysql_connection()
+{
+	char *mysql_user;
+	char *mysql_host;
+	char *mysql_pwd;
+	char *mysql_db;
+	char *sql;
+	int rc = 0;
+	MYSQL *mysql = NULL;
+
+	// allocate for max sizes
+	mysql_user = malloc(32 + 1);
+	mysql_host = malloc(255 + 1);
+	mysql_pwd = malloc(32 + 1);
+	mysql_db = malloc(64 + 1);
+
+	strcpy(mysql_user, getenv("MYSQL_USER") != NULL ? getenv("MYSQL_USER") : "User not key_values_length.");
+	strcpy(mysql_host, getenv("MYSQL_HOST") != NULL ? getenv("MYSQL_HOST") : "Host not key_values_length.");
+	strcpy(mysql_pwd, getenv("MYSQL_PWD") != NULL ? getenv("MYSQL_PWD") : "Password not key_values_length.");
+	strcpy(mysql_db, getenv("MYSQL_DB") != NULL ? getenv("MYSQL_DB") : "Database not key_values_length.");
+
+	fprintf(stderr, "mysql_user=\"%s\"\n", mysql_user);
+	fprintf(stderr, "mysql_host=\"%s\"\n", mysql_host);
+	fprintf(stderr, "mysql_db=\"%s\"\n", mysql_db);
+
+	mysql = mysql_init(NULL);
+	fprintf(stderr, "mysql=%p\n", (void *)mysql);
+
+	mysql_real_connect(mysql, mysql_host, mysql_user, mysql_pwd, mysql_db, 0, NULL, 0);
+	if (mysql_errno(mysql) != 0)
+	{
+		fprintf(stderr, "Failed to connect to database: Error: %s\n", mysql_error(mysql));
+		mysql = NULL;
+	}
+
+	return mysql;
+}
+
+/*
+	Get the POST key value pairs
+*/
+struct KEY_VALUE * get_post_data(int *key_values_length)
+{
+	char *buffer = NULL;
+	char *content_length_string = NULL;
+	char *token = NULL;
+	char *key = NULL;
+	char *value = NULL;
+	int buffer_length;
+	int content_length = 0;
+	int key_values_found = 0;
+	int key_values_index = 0;
+	int i = 0;
+	struct KEY_VALUE *key_values = NULL;
+
+	content_length_string = getenv("CONTENT_LENGTH");
+	fprintf(stderr, "content_length_string=\"%s\"\n", content_length_string);
+	if (content_length_string != NULL)
+	{
+		content_length = atoi(content_length_string);
+		fprintf(stderr, "content_length_string=%d\n", content_length);
+	}
+
+	buffer = malloc(content_length + 1);
+	if (buffer == NULL)
+	{
+		fprintf(stderr, "Failed to allocate %d bytes for content buffer.\n", content_length + 1);
+
+	}
+
+	if (content_length > 0)
+	{
+		fgets(buffer, content_length + 1, stdin);
+		fprintf(stderr, "buffer=\"%s\"\n", buffer);
+	}
+
+	buffer_length = strlen(buffer);
+	if (buffer_length > 0)
+	{
+		fprintf(stderr, "buffer_length=%d\n", buffer_length);
+		for (i = 0, key_values_found = 1; i < buffer_length; i++, key_values_found += (((char)*(buffer + i)) == '&') ? 1 : 0);
+		fprintf(stderr, "key_values_found=%d\n", key_values_found);
+		if (key_values_found > 0)
+		{
+			key_values = malloc((sizeof(struct KEY_VALUE) * key_values_found));
+			memset(key_values, 0, sizeof(struct KEY_VALUE) * key_values_found);
+			key_values_index = -1;
+			while ((token = strsep(&buffer, "&\n"))) // the \n is a separator
+			{
+				fprintf(stderr, "token=\"%s\"\n", token);
+				if (strlen(token) > 0)
+				{
+					while ((key = strsep(&token, "=")))
+					{
+						fprintf(stderr, "key=\"%s\"\n", key);
+						value = strsep(&token, "=");
+						fprintf(stderr, "value=\"%s\"\n", value);
+						key_values_index++;
+						/* this works, but's not how they say you should code it
+						(key_values + key_value_index)->key = malloc(sizeof(char *));
+						(key_values + key_value_index)->key = key;
+						(key_values + key_value_index)->value = malloc(sizeof(char *));
+						(key_values + key_value_index)->value = value;
+						*/
+						(key_values + key_values_index)->key = malloc(strlen(key) + 1);
+						strcpy((key_values + key_values_index)->key, key);
+						(key_values + key_values_index)->value = malloc(strlen(value) + 1);
+						strcpy((key_values + key_values_index)->value, value);
+						/*
+						printf("key_values=%p\n", key_values);
+						printf("(key_values + key_value_index)=%p\n", (key_values + key_value_index));
+						printf("(key_values + key_value_index)->key=%p\n", (key_values + key_value_index)->key);
+						printf("(key_values + key_value_index)->key=\"%s\"\n", (key_values + key_value_index)->key);
+						*/
+					}
+				}
+			}
+		}
+	}
+	free(buffer);
+
+	*(key_values_length) = key_values_found;
+
+	return key_values;
 }
 
 #endif

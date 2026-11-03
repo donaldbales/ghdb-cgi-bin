@@ -71,7 +71,7 @@ int main()
 				//fprintf(stderr, "key=\"%s\"\n", key);
 				value = strsep(&token, "=");
 				//fprintf(stderr, "value=\"%s\"\n", value);
-				fi = field_index(key);
+				fi = get_field_index(key);
 				//fprintf(stderr, "fi=%d\n", fi);
 				if (fi > -1)
 				{
@@ -134,7 +134,7 @@ int main()
 	// the SQL INSERT statement is defined in insert.h
 	//fprintf(stderr, "sql=\"%s\"\n", sql);
 
-	rc = mysql_stmt_prepare(stmt, sql, strlen(sql));
+	rc = mysql_stmt_prepare(stmt, ghdb_insert, strlen(ghdb_insert));
 	if (mysql_stmt_errno(stmt) != 0)
 	{
 		//fprintf(stderr, "%s\n", mysql_stmt_error(stmt));

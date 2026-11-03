@@ -1,5 +1,5 @@
 
-char * sql = 
+char *ghdb_insert = 
 	"insert into ghdb ( "
 		"plant_name, "
 		"latin_name, "
