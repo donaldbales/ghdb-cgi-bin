@@ -1,5 +1,5 @@
-ghdb-cgi-bin
-# Green House Database as a cgi-bin application #
+# ghdb-cgi-bin #
+**Green House Database as a cgi-bin application**
 
 This is an experiment to write the Green House Database application (https://github.com/donaldbales/ghdb originally a curses application) as a C Programming Language and cgi-bin web-based application. Admittedly ugly by modern web application practices, this is how we built them in the beginning (1993). It consist of only two HTML templates, one for a list view and a second for a form view. It uses no cascading style sheets (CSS) or Javascript. It is fully functional.
 
