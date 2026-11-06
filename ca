@@ -1,0 +1,9 @@
+sudo pwd
+sudo cp ghdbform.html /var/www/html
+sudo cp ghdblist.html /var/www/html
+gcc add.c -I/usr/include/mysql -lmysqlclient -o add.cgi && chmod 755 add.cgi && sudo cp add.cgi /usr/lib/cgi-bin
+gcc edit.c -o edit.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 edit.cgi && sudo cp edit.cgi /usr/lib/cgi-bin
+gcc find.c -I/usr/include/mysql -lmysqlclient -o find.cgi && chmod 755 find.cgi && sudo cp find.cgi /usr/lib/cgi-bin
+gcc insert.c -o insert.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 insert.cgi && sudo cp insert.cgi /usr/lib/cgi-bin
+gcc select.c -o select.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 select.cgi && sudo cp select.cgi /usr/lib/cgi-bin
+gcc update.c -o update.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 update.cgi && sudo cp update.cgi /usr/lib/cgi-bin

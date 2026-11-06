@@ -133,6 +133,88 @@ struct FIELD fields[NUM_FIELDS] =
 	{ "pollination_secondary", "{pollination_secondary}", MYSQL_TYPE_STRING }
 };
 
+char *ghdb_delete = 
+	"delete from ghdb "
+		"where plant_name = ?";
+
+char *ghdb_insert = 
+	"insert into ghdb ( "
+		"plant_name, "
+		"latin_name, "
+		"height, "
+		"width, "
+		"planting_depth, "
+		"seed_size, "
+		"seed_need_light, "
+		"seed_scarification, "
+		"ph, "
+		"ec, "
+		"day_light_interval, "
+		"photoperiod_hours, "
+		"light_lower, "
+		"light_optimal, "
+		"light_upper, "
+		"nitrogen_lower, "
+		"nitrogen_optimal, "
+		"nitrogen_upper, "
+		"phosphorus_lower, "
+		"phosphorus_optimal, "
+		"phosphorus_upper, "
+		"potassium_lower, "
+		"potassium_optimal, "
+		"potassium_upper, "
+		"germination_lower, "
+		"germination_normal, "
+		"germination_upper, "
+		"transplanting_lower, "
+		"transplanting_optimal, "
+		"transplanting_upper, "
+		"maturity_lower, "
+		"maturity_optimal, "
+		"maturity_upper, "
+		"frost_tolerance, "
+		"flowering, "
+		"pollination_primary, "
+		"pollination_secondary) "
+	"values ( "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?, "
+		"?)";
+
 char *ghdb_select = 
 	"select "
 		"plant_name, "
@@ -173,6 +255,46 @@ char *ghdb_select =
 		"pollination_primary, "
 		"pollination_secondary "
 	"from ghdb where ";
+
+char *ghdb_update = 
+	"update ghdb set "
+		"latin_name = ?, "
+		"height = ?, "
+		"width = ?, "
+		"planting_depth = ?, "
+		"seed_size = ?, "
+		"seed_need_light = ?, "
+		"seed_scarification = ?, "
+		"ph = ?, "
+		"ec = ?, "
+		"day_light_interval = ?, "
+		"photoperiod_hours = ?, "
+		"light_lower = ?, "
+		"light_optimal = ?, "
+		"light_upper = ?, "
+		"nitrogen_lower = ?, "
+		"nitrogen_optimal = ?, "
+		"nitrogen_upper = ?, "
+		"phosphorus_lower = ?, "
+		"phosphorus_optimal = ?, "
+		"phosphorus_upper = ?, "
+		"potassium_lower = ?, "
+		"potassium_optimal = ?, "
+		"potassium_upper = ?, "
+		"germination_lower = ?, "
+		"germination_normal = ?, "
+		"germination_upper = ?, "
+		"transplanting_lower = ?, "
+		"transplanting_optimal = ?, "
+		"transplanting_upper = ?, "
+		"maturity_lower = ?, "
+		"maturity_optimal = ?, "
+		"maturity_upper = ?, "
+		"frost_tolerance = ?, "
+		"flowering = ?, "
+		"pollination_primary = ?, "
+		"pollination_secondary = ? "
+	"where plant_name = ?";
 
 char * html_encode(char *string)
 {
@@ -366,6 +488,45 @@ char * url_decode(char *string)
 	}
 
 	return result;
+}
+
+char * get_asset(char *file_name)
+{
+	int i = 0;
+
+	struct stat file_status;
+
+	char *file_buffer= NULL;
+	char *pointer = NULL;
+	FILE *file_pointer = NULL;
+	size_t bytes_read = 0;
+
+	i = stat(file_name, &file_status);
+	if (i == 0) 
+	{
+		file_buffer = malloc(file_status.st_size);
+		if (file_buffer == NULL) 
+		{
+			fprintf(stderr, "Failed to allocate %ld bytes of memory for file_buffer.\n", file_status.st_size);
+			exit(EXIT_FAILURE);
+		}
+		//fprintf(strerr, "file_status.st_size=%lu\n", file_status.st_size);
+	}
+
+	file_pointer = fopen(file_name, "r");
+	if (file_pointer)
+	{
+		bytes_read = fread(file_buffer, 1, file_status.st_size, file_pointer);
+		//fprintf(stderr, "bytes_read=%lu\n", bytes_read);
+		if (bytes_read != file_status.st_size)
+		{
+			fprintf(stderr, "Didn't read the whole file.\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	fclose(file_pointer);
+
+	return file_buffer;
 }
 
 int get_field_index(char *name)

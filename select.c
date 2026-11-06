@@ -9,9 +9,10 @@
 
 #include "ghdb-cgi-bin.h"
 /*
-	gcc select.c -o select.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 select.cgi && sudo cp select.cgi /usr/lib/cgi-bin
+gcc select.c -o select.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 select.cgi && sudo cp select.cgi /usr/lib/cgi-bin
 
-	cat Apple.txt | env CONTENT_LENGTH=`stat -c %s Apple.txt` ./select.cgi
+cat Apple.txt | env CONTENT_LENGTH=`stat -c %s Apple.txt` ./select.cgi
+
 */
 
 int main()
@@ -19,15 +20,15 @@ int main()
 	int i = 0;
 
 	int key_values_length = 0;
-	struct KEY_VALUE *key_values;
+	struct KEY_VALUE *key_values = NULL;
 
-	char **values;
-	int field_index;
+	char **values = NULL;
+	int field_index = 0;
 	int values_index = 0;
 	int values_length = 0;
 
 	char *order = " order by 1";
-	char *sql;
+	char *sql = NULL;
 	int order_length = strlen(order);
 	int select_length = strlen(ghdb_select);
 	int where_length = 0;
@@ -58,6 +59,7 @@ int main()
 	size_t bytes_read = 0;
 
 	int alt = 0;
+
 	/*
 		Initialize the results memory
 	*/
@@ -131,37 +133,39 @@ int main()
 	if (mysql_stmt_errno(stmt) != 0)
 	{
 		fprintf(stderr, "%s\n", mysql_stmt_error(stmt));
-		// TODO send a 500?
 		exit(EXIT_FAILURE);
 	}
 	fprintf(stderr, "New prepared statement: %p\n", stmt);
 
 	fprintf(stderr, "Calculate the where clause length.\n");
-	for (i = 0; i < NUM_FIELDS; i++)
+	if (values != NULL)
 	{
-		if (strlen(*(values + i)) > 0)
+		for (i = 0; i < NUM_FIELDS; i++)
 		{
-			if (strstr(*(values + i), "%") == NULL)
+			if (strlen(*(values + i)) > 0)
 			{
-				// it's an equal statement
-				// the column name: strlen(fields[i].n)
-				// space between the operator: 1
-				// equal operator: 1
-				// space between the parameter: 1
-				// the parameter place holder, ?: 1
-				// where_length > 0 means there's an " and ": 5
-				where_length += (where_length == 0 ? 0 : 5) + strlen(fields[i].n) + 4;
-			}
-			else
-			{
-				// it's a like statement
-				// the column name: strlen(fields[i].n)
-				// space between the operator: 1
-				// like operator: 4
-				// space between the parameter: 1
-				// the parameter place holder, ?: 1
-				// where_length > 0 means there's an " and ": 5
-				where_length += (where_length == 0 ? 0 : 5) + strlen(fields[i].n) + 7;
+				if (strstr(*(values + i), "%") == NULL)
+				{
+					// it's an equal statement
+					// the column name: strlen(fields[i].n)
+					// space between the operator: 1
+					// equal operator: 1
+					// space between the parameter: 1
+					// the parameter place holder, ?: 1
+					// where_length > 0 means there's an " and ": 5
+					where_length += (where_length == 0 ? 0 : 5) + strlen(fields[i].n) + 4;
+				}
+				else
+				{
+					// it's a like statement
+					// the column name: strlen(fields[i].n)
+					// space between the operator: 1
+					// like operator: 4
+					// space between the parameter: 1
+					// the parameter place holder, ?: 1
+					// where_length > 0 means there's an " and ": 5
+					where_length += (where_length == 0 ? 0 : 5) + strlen(fields[i].n) + 7;
+				}
 			}
 		}
 	}
@@ -225,16 +229,17 @@ int main()
 	if (mysql_stmt_errno(stmt) != 0)
 	{
 		fprintf(stderr, "%s\n", mysql_stmt_error(stmt));
+		exit(EXIT_FAILURE);
 	}
 
 	if (where_length > 0)
 	{
-		bind_params = (struct MYSQL_BIND *)malloc(sizeof(struct MYSQL_BIND *) * values_length);
+		bind_params = (struct MYSQL_BIND *)malloc(sizeof(struct MYSQL_BIND) * values_length);
 		if (bind_params == NULL)
 		{
 			fprintf(stderr, "Failed to allocate bind_params memory.\n");
 		}
-		memset(bind_params, 0, sizeof(struct MYSQL_BIND *) * values_length);
+		memset(bind_params, 0, sizeof(struct MYSQL_BIND) * values_length);
 		fprintf(stderr, "bind_params=%p\n", bind_params);
 		bind_params_index = -1;
 		for (i = 0; i < NUM_FIELDS; i++)
@@ -270,6 +275,7 @@ int main()
 		if (mysql_stmt_errno(stmt) != 0)
 		{
 			fprintf(stderr, "%s\n", mysql_stmt_error(stmt));
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -280,14 +286,16 @@ int main()
 	if (mysql_stmt_errno(stmt) != 0)
 	{
 		fprintf(stderr, "%s\n", mysql_stmt_error(stmt));
+		exit(EXIT_FAILURE);
 	}
 
-	bind_results = (struct MYSQL_BIND *)malloc(sizeof(struct MYSQL_BIND *) * NUM_FIELDS);
+	bind_results = (struct MYSQL_BIND *)malloc(sizeof(struct MYSQL_BIND) * NUM_FIELDS);
 	if (bind_results == NULL)
 	{
 		fprintf(stderr, "Failed to allocate bind_results memory.\n");
+		exit(EXIT_FAILURE);
 	}
-	memset(bind_results, 0, sizeof(struct MYSQL_BIND *) * NUM_FIELDS);
+	memset(bind_results, 0, sizeof(struct MYSQL_BIND) * NUM_FIELDS);
 	fprintf(stderr, "bind_results=%p\n", bind_results);
 
 	for (i = 0; i < NUM_FIELDS; i++)
@@ -307,6 +315,7 @@ int main()
 	if (mysql_stmt_errno(stmt) != 0)
 	{
 		fprintf(stderr, "%s\n", mysql_stmt_error(stmt));
+		exit(EXIT_FAILURE);
 	}
 	else
 	{
@@ -325,6 +334,7 @@ int main()
 		if (mysql_stmt_errno(stmt) != 0)
 		{
 			fprintf(stderr, "%s\n", mysql_stmt_error(stmt));
+			exit(EXIT_FAILURE);
 		}
 
 		if (i == MYSQL_NO_DATA)
@@ -429,17 +439,11 @@ int main()
 	file_buffer = pointer;
 
 	printf("Content-Type:text/html;charset=iso-8859-1\n\n");
-
 	puts(file_buffer);
-
 	free(file_buffer);
-
-
-	//printf("Status: 303 See other\n");
-	//printf("Location: /cgi-bin/add.cgi?0\n\n");
-
-	fprintf(stderr, "done.\n");
-	fflush(stderr);
+	fflush(stdout);
+	//fprintf(stderr, "done.\n");
+	//fflush(stderr);
 
 	return 0;
 }

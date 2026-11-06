@@ -216,11 +216,26 @@
 			<tr><td width="200px" align="right">
 				</td>
 				<td width="400px" align="left">
-					<input type="submit" value="{submit}">
+					<table width="400px">
+						<tr>
+							<td align="left" width="40px">
+								<input type="submit" value="{submit}">
+								</form>
+							</td>
+							<td align="left" width="40px">
+								<form action="/cgi-bin/select.cgi" method="post">
+									<!--<input name="plant_name" type="hidden" value="%">-->
+									<input align="left" type="submit" value="Cancel">
+								</form>
+							</td>
+							<td width="320px">
+							</td>
+						<tr>
+					</table>
 				</td>
 			</tr>
 		</table>
-		</form>
+
 		</div>
 		</td><td align="right" valign="top" width="10%"><!--MODE--></td></tr></table>
 		<b><!--MSG--></b>
