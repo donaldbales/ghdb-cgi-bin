@@ -14,6 +14,7 @@ There are two HTML files.
 From these you can:
 * Add a record
 * Find one or more SQL expression matching records
+* Edit a record
 * Delete a record
 * Import TSV records
 * Export TSV records
