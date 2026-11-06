@@ -8,7 +8,8 @@
 #include "ghdb-cgi-bin.h"
 
 /*
-	gcc insert.c -o insert.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 insert.cgi && sudo cp insert.cgi /usr/lib/cgi-bin
+gcc insert.c -o insert.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 insert.cgi && sudo cp insert.cgi /usr/lib/cgi-bin
+
 */
 
 int main()

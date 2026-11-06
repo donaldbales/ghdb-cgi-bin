@@ -8,9 +8,10 @@
 #include "ghdb-cgi-bin.h"
 
 /*
-	gcc update.c -o update.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 update.cgi && sudo cp update.cgi /usr/lib/cgi-bin
+gcc update.c -o update.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 update.cgi && sudo cp update.cgi /usr/lib/cgi-bin
 
-	cat Apple.txt | env CONTENT_LENGTH=`stat -c %s Apple.txt` ./update.cgi
+cat Apple.txt | env CONTENT_LENGTH=`stat -c %s Apple.txt` ./update.cgi
+
 */
 
 int main()
