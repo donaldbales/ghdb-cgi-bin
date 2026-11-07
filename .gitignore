@@ -1,4 +1,5 @@
 # My binaries
+.DS_Store
 html_encode
 strrep
 url_decode
