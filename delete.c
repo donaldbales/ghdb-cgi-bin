@@ -40,32 +40,6 @@ int main()
 	bool *bind_is_null;
 
 	/*
-		Get the POST key value pairs
-	*/
-	key_values = get_post_data(&key_values_length);
-	fprintf(stderr, "key_values_length=%d\n", key_values_length);
-	if (key_values_length > 0)
-	{		
-		values = (char **)malloc(sizeof(char *) * NUM_FIELDS);
-		for (i = 0; i < NUM_FIELDS; i++)
-		{
-			*(values + i) = (char *)malloc(sizeof(char) * 1);
-			strcpy(*(values + i), "");
-		}
-		values_length = 0;
-		for (i = 0; i < key_values_length; i++)
-		{
-			field_index = get_field_index((key_values + i)->key);
-			fprintf(stderr, "field_index=%d\n", field_index);
-			if (field_index > -1)
-			{
-				values_length++;
-				strcpy(*(values + field_index), url_decode((key_values + i)->value)); 
-				fprintf(stderr, "*(values + %d)=\"%s\"\n", field_index, *(values + field_index));
-			} 
-		}
-	}	
-	/*
 		Get a connection to MySQL
 	*/
 	mysql = get_mysql_connection();
@@ -91,6 +65,35 @@ int main()
 		fprintf(stderr, "%s\n", mysql_stmt_error(stmt));
 		exit(EXIT_FAILURE);
 	}
+
+
+	/*
+		Get the POST key value pairs
+	*/
+	key_values = get_post_data(&key_values_length);
+	fprintf(stderr, "key_values_length=%d\n", key_values_length);
+
+	if (key_values_length > 0)
+	{		
+		values = (char **)malloc(sizeof(char *) * NUM_FIELDS);
+		for (i = 0; i < NUM_FIELDS; i++)
+		{
+			*(values + i) = (char *)malloc(sizeof(char) * 1);
+			strcpy(*(values + i), "");
+		}
+		values_length = 0;
+		for (i = 0; i < key_values_length; i++)
+		{
+			field_index = get_field_index((key_values + i)->key);
+			fprintf(stderr, "field_index=%d\n", field_index);
+			if (field_index > -1)
+			{
+				values_length++;
+				strcpy(*(values + field_index), url_decode((key_values + i)->value)); 
+				fprintf(stderr, "*(values + %d)=\"%s\"\n", field_index, *(values + field_index));
+			} 
+		}
+	}	
 
 	//fprintf(stderr, "Build the bind_param variable.\n");
 	bind_params = (struct MYSQL_BIND *)malloc(sizeof(struct MYSQL_BIND) * NUM_FIELDS);
@@ -149,12 +152,15 @@ int main()
 	affected_rows = mysql_stmt_affected_rows(stmt);
 	fprintf(stderr, "%ld row deleted.\n", affected_rows);
 
-	fprintf(stderr, "Close the prepared statement.\n");
-	mysql_stmt_close(stmt);
-
 	printf("Status: 303 See other\n");
 	printf("Location: /cgi-bin/select.cgi\n\n");
 	fflush(stdout);
+
+
+	fprintf(stderr, "Close the prepared statement.\n");
+	mysql_stmt_close(stmt);
+
+	mysql_close(mysql);
 
 	return 0;
 }

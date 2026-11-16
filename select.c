@@ -50,13 +50,10 @@ int main()
 	char *row = NULL;
 	int row_length = 0;
 
-	struct stat file_status;
-
-	char *file_buffer= NULL;
+	char *file_buffer = NULL;
 	char *file_name = "/var/www/html/ghdblist.html";
 	char *pointer = NULL;
-	FILE *file_pointer = NULL;
-	size_t bytes_read = 0;
+	char *temp_buffer = NULL;
 
 	int alt = 0;
 
@@ -89,6 +86,21 @@ int main()
 	}
 
 	/*
+		Get the HTML template
+	*/
+	file_buffer = get_asset(file_name);
+	
+	/*
+		Get a connection to MySQL
+	*/
+	mysql = get_mysql_connection();
+	if (mysql == NULL)
+	{
+		// TODO send a 500?
+		exit(EXIT_FAILURE);
+	}
+
+	/*
 		Get the POST key value pairs
 	*/
 	key_values = get_post_data(&key_values_length);
@@ -113,16 +125,6 @@ int main()
 				fprintf(stderr, "*(values + %d)=\"%s\"\n", field_index, *(values + field_index));
 			} 
 		}
-	}
-
-	/*
-		Get a connection to MySQL
-	*/
-	mysql = get_mysql_connection();
-	if (mysql == NULL)
-	{
-		// TODO send a 500?
-		exit(EXIT_FAILURE);
 	}
 
 	/*
@@ -279,7 +281,6 @@ int main()
 		}
 	}
 
-
 	fprintf(stderr, "Execute the prepared statement.\n");
 	i = mysql_stmt_execute(stmt);
 	fprintf(stderr, "i=%d\n", i);
@@ -323,7 +324,7 @@ int main()
 	}
 
 	fprintf(stderr, "Note: MYSQL_NO_DATA=%d\n", MYSQL_NO_DATA);
-	row = (char *)malloc(sizeof(char) * 600);
+	row = (char *)malloc(sizeof(char) * 700);
 	strcpy(row, "\n");
 	for (;;)
 	{
@@ -339,7 +340,7 @@ int main()
 
 		if (i == MYSQL_NO_DATA)
 		{
-			//fprintf(stderr, "MYSQL_NO_DATA, i=%d\n", i);
+			fprintf(stderr, "MYSQL_NO_DATA, i=%d\n", i);
 			break;
 		}
 
@@ -349,7 +350,7 @@ int main()
 		}
 		else
 		{
-			row_length = strlen(row) + 600;
+			row_length = strlen(row) + 700;
 		}
 		row = (char *)realloc(row, sizeof(char) * row_length);
 		strcat(row, "\t\t\t<tr");
@@ -394,56 +395,39 @@ int main()
 	}
 
 	//printf("%s", row);
-	fprintf(stderr, "Close the prepared statement.\n");
-	(void) mysql_stmt_close(stmt);
-
 	fprintf(stderr, "strlen(row)=%ld\n", strlen(row));
+
 	// Now send the form.
 
-	i = stat(file_name, &file_status);
-	if (i == 0) 
+	temp_buffer = malloc(strlen(file_buffer) + 1);
+	if (temp_buffer == NULL) 
 	{
-		file_buffer = malloc(file_status.st_size + 1);
-		memset(file_buffer, 0, file_status.st_size + 1);
-		if (file_buffer == NULL) 
-		{
-			printf("Failed to allocate %ld bytes of memory for file_buffer.\n", file_status.st_size);
-			exit(EXIT_FAILURE);
-		}
-		//printf("file_status.st_size=%lu\n", file_status.st_size);
+		printf("Failed to allocate %ld bytes of memory for temp_buffer.\n", strlen(file_buffer) + 1);
+		exit(EXIT_FAILURE);
 	}
-	else
-	{
-		return 1;
-	}
+	strcpy(temp_buffer, file_buffer);
 
-	file_pointer = fopen(file_name, "r");
-	if (file_pointer)
-	{
-		bytes_read = fread(file_buffer, 1, file_status.st_size, file_pointer);
-		//printf("bytes_read=%lu\n", bytes_read);
-		if (bytes_read != file_status.st_size)
-		{
-			printf("Didn't read the whole file.\n");
-			exit(EXIT_FAILURE);
-		}
-	}
-	fclose(file_pointer);
+	pointer = strrep(temp_buffer, "<!--LIST-->", row);
+	free(temp_buffer);
+	temp_buffer = pointer;
 
-	pointer = strrep(file_buffer, "<!--LIST-->", row);
-	free(file_buffer);
-	file_buffer = pointer;
-
-	pointer = strrep(file_buffer, "<!--MSG-->", "&nbsp;");
-	free(file_buffer);
-	file_buffer = pointer;
+	pointer = strrep(temp_buffer, "<!--MSG-->", "&nbsp;");
+	free(temp_buffer);
+	temp_buffer = pointer;
 
 	printf("Content-Type:text/html;charset=iso-8859-1\n\n");
-	puts(file_buffer);
-	free(file_buffer);
+	puts(temp_buffer);
+	free(temp_buffer);
 	fflush(stdout);
 	//fprintf(stderr, "done.\n");
 	//fflush(stderr);
+
+
+	fprintf(stderr, "Close the prepared statement:%p\n", stmt);
+	mysql_stmt_close(stmt);
+	fprintf(stderr, "Close the mysql connection:%p\n", mysql);
+	mysql_close(mysql);
+	fflush(stderr);
 
 	return 0;
 }

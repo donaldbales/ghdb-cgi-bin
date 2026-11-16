@@ -52,7 +52,7 @@ int main()
 	char *file_buffer= NULL;
 	char *file_name = "/var/www/html/ghdbform.html";
 	char *pointer = NULL;
-	FILE *file_pointer = NULL;
+	char *temp_buffer = NULL;
 
 	int alt = 0;
 	/*
@@ -84,6 +84,21 @@ int main()
 	}
 
 	/*
+		Get the HTML template
+	*/
+	file_buffer = get_asset(file_name);
+
+	/*
+		Get a connection to MySQL
+	*/
+	mysql = get_mysql_connection();
+	if (mysql == NULL)
+	{
+		// TODO send a 500?
+		exit(EXIT_FAILURE);
+	}
+
+	/*
 		Get the POST key value pairs
 	*/
 	key_values = get_post_data(&key_values_length);
@@ -108,16 +123,6 @@ int main()
 				fprintf(stderr, "*(values + %d)=\"%s\"\n", field_index, *(values + field_index));
 			} 
 		}
-	}
-
-	/*
-		Get a connection to MySQL
-	*/
-	mysql = get_mysql_connection();
-	if (mysql == NULL)
-	{
-		// TODO send a 500?
-		exit(EXIT_FAILURE);
 	}
 
 	/*
@@ -270,7 +275,6 @@ int main()
 		}
 	}
 
-
 	fprintf(stderr, "Execute the prepared statement.\n");
 	i = mysql_stmt_execute(stmt);
 	fprintf(stderr, "i=%d\n", i);
@@ -325,39 +329,48 @@ int main()
 	}
 
 	//printf("%s", row);
-	fprintf(stderr, "Close the prepared statement.\n");
-	(void) mysql_stmt_close(stmt);
-
-	file_buffer = get_asset(file_name);
+	temp_buffer = malloc(strlen(file_buffer) + 1);
+	if (temp_buffer == NULL) 
+	{
+		printf("Failed to allocate %ld bytes of memory for temp_buffer.\n", strlen(file_buffer) + 1);
+		exit(EXIT_FAILURE);
+	}
+	strcpy(temp_buffer, file_buffer);
 
 	for (i = 0; i < NUM_FIELDS; i++)
 	{
 		if (bind_result_is_nulls[i])
 		{
 			fprintf(stderr, "%s is NULL\n", fields[i].n);
-			pointer = strrep(file_buffer, fields[i].cb, "");
-			free(file_buffer);
-			file_buffer = pointer;
+			pointer = strrep(temp_buffer, fields[i].cb, "");
+			free(temp_buffer);
+			temp_buffer = pointer;
 		}
 		else
 		{
 			fprintf(stderr, "%s = \"%s\"\n", fields[i].n, bind_result_buffers[i]);
-			pointer = strrep(file_buffer, fields[i].cb, bind_result_buffers[i]);
-			free(file_buffer);
-			file_buffer = pointer;
+			pointer = strrep(temp_buffer, fields[i].cb, bind_result_buffers[i]);
+			free(temp_buffer);
+			temp_buffer = pointer;
 		}
 	}
-	pointer = strrep(file_buffer, "{submit}", "Update");
-	free(file_buffer);
-	file_buffer = pointer;
-	pointer = strrep(file_buffer, "action.cgi", "update.cgi");
-	free(file_buffer);
-	file_buffer = pointer;
+	pointer = strrep(temp_buffer, "{submit}", "Update");
+	free(temp_buffer);
+	temp_buffer = pointer;
+	pointer = strrep(temp_buffer, "action.cgi", "update.cgi");
+	free(temp_buffer);
+	temp_buffer = pointer;
 
 	printf("Content-Type:text/html;charset=iso-8859-1\n\n");
-	puts(file_buffer);
-	free(file_buffer);
+	puts(temp_buffer);
+	free(temp_buffer);
 	fflush(stdout);;
 
+
+	fprintf(stderr, "Close the prepared statement.\n");
+	mysql_stmt_close(stmt);
+
+	mysql_close(mysql);
+	
 	return 0;
 }

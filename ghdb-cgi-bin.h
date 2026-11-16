@@ -622,7 +622,7 @@ struct KEY_VALUE * get_post_data(int *key_values_length)
 	if (buffer_length > 0)
 	{
 		fprintf(stderr, "buffer_length=%d\n", buffer_length);
-		for (i = 0, key_values_found = 1; i < buffer_length; i++, key_values_found += (((char)*(buffer + i)) == '&') ? 1 : 0);
+		for (i = 0, key_values_found = 0; i < buffer_length; i++, key_values_found += (((char)*(buffer + i)) == '&') ? 1 : 0);
 		fprintf(stderr, "key_values_found=%d\n", key_values_found);
 		if (key_values_found > 0)
 		{
