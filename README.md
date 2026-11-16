@@ -71,6 +71,36 @@ mysql> desc ghdb;
 The underlying database is hosted on MySQL. Prepared INSERT, SELECT, UPDATE, and DELETE SQL statements are used to prevent SQL injection. Since the use of cgi-bin prevents the caching of SQL connections and prepared statements between transactions, the use of prepared statements is slightly slower than using simple SQL statements.
 
 
+## Apache Config ##
+```
+sudo nano /etc/apache2/conf-enabled/serve-cgi-bin.conf
+
+<IfModule mod_alias.c>
+        <IfModule mod_cgi.c>
+                Define ENABLE_USR_LIB_CGI_BIN
+        </IfModule>
+
+        <IfModule mod_cgid.c>
+                Define ENABLE_USR_LIB_CGI_BIN
+        </IfModule>
+
+        <IfDefine ENABLE_USR_LIB_CGI_BIN>
+                ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+                <Directory "/usr/lib/cgi-bin">
+                        AllowOverride None
+                        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                        Require all granted
+                        SetEnv MYSQL_DB "don"
+                        SetEnv MYSQL_HOST "192.168.0.222"
+                        SetEnv MYSQL_PWD "password"
+                        SetEnv MYSQL_USER "don"
+                </Directory>
+        </IfDefine>
+</IfModule>
+
+sudo systemctl restart apache2
+```
+
 ## cgi-bin Support in the C Programming Language. ##
 
 I looked, but did not find a library of cgi-bin supporting functions for the C Programming Language, so I wrote them. Here's my minimal set:
@@ -110,6 +140,43 @@ char * strrep(char *string, const char *search, const char *replace)
 */
 char * url_decode(char *string)
 ```
+
+## Developer Techniques ##
+
+When a cgi-bin program is executed, 
+* stdout is sent to the end-users browser, 
+* stderr to the Apache error log (/var/log/apache2/error.log) and 
+* stdin will contain the POSTed application/x-www-form-urlencoded message, which is a set of key-value pairs separated by the & character. For example:
+
+```
+plant_name=Apple&latin_name=Dumpling&height=&width=&planting_depth=&seed_size=&seed_need_light=&seed_scarification=&ph=&ec=&day_light_interval=&photoperiod_hours=&light_lower=0&light_optimal=&light_upper=&nitrogen_lower=&nitrogen_optimal=&nitrogen_upper=&phosphorus_lower=&phosphorus_optimal=&phosphorus_upper=&potassium_lower=&potassium_optimal=&potassium_upper=&germination_lower=&germination_normal=&germination_upper=&transplanting_lower=&transplanting_optimal=&transplanting_upper=&maturity_lower=&maturity_optimal=&maturity_upper=&frost_tolerance=&flowering=&pollination_primary=&pollination_secondary=&submit=Update
+```
+
+Accordingly, you can simulate this behaviour while developing a program using a command like the following:
+
+```
+cat Apple.txt | env CONTENT_LENGTH=`stat -c %s Apple.txt` ./select.cgi
+```
+
+Above, I put the key-value pairs in a file named Apple.txt. The command pipes the contents of that file into stdin, next the command sets the content length by stating the file for its length and then executes the select.cgi program.
+
+The entire output of the program, both stdout and stderr show up on your screen. This is a much easier development loop than deploying and executing the binary via a cgi-bin URL.
+
+Similarly, you can simulate a GET response by setting the QUERY_STRING environment variable with the key-value pairs as follows:
+
+```
+env QUERY_STRING="plant_name=Apple&latin_name=Dumpling" ./select.cgi
+```
+
+To see the error messages output once deployed to the cgi-bin directory, you can tail the log file as follows:
+
+```
+tail -f /var/log/apache2/error.log
+```
+
+##  Memory Management ##
+I've only coded a minimum amount of memory management, because it's a cgi-bin program that will release all of the dynamically allocated memory as soon as the program completes.
+
 
 ## Links ##
 
