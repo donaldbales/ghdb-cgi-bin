@@ -429,10 +429,13 @@ char * url_decode(char *string)
 	char *result = NULL;
 	int result_length = string_length;
 	int i = 0;
+	/*
+		Calculate the result string length
+	*/
 	for (i=0; i<string_length; i++)
 	{
 		c = *(string + i);
-		//printf("%c\n", c);
+		//fprintf(stderr, "url_decode(): c=%c\n", c);
 		switch (c)
 		{
 			case '%':
@@ -451,12 +454,15 @@ char * url_decode(char *string)
 				break;
 		}
 	}
+	/*
+		Copy and translate to the result
+	*/
 	result = malloc(result_length + 1);
 	p = result;
 	for (i=0; i<string_length; i++)
 	{
 		c = *(string + i);
-		//printf("%c\n", c);
+		//fprintf(stderr, "url_decode(): c=%c\n", c);
 		switch (c)
 		{
 			case '%':
@@ -472,7 +478,8 @@ char * url_decode(char *string)
 						x2i[2] = '\0';
 						*p = (char) strtol(x2i, NULL, 16);
 						p += 1;
-						i += 2;
+						// only one because of the auto increment? i += 2;
+						i += 1;
 					}
 				}
 				break;
@@ -486,6 +493,7 @@ char * url_decode(char *string)
 				break;
 		}
 	}
+	*p = '\0';
 
 	return result;
 }
@@ -568,7 +576,7 @@ MYSQL * get_mysql_connection()
 	fprintf(stderr, "mysql_db=\"%s\"\n", mysql_db);
 
 	mysql = mysql_init(NULL);
-	fprintf(stderr, "mysql=%p\n", (void *)mysql);
+	//fprintf(stderr, "mysql=%p\n", (void *)mysql);
 
 	mysql_real_connect(mysql, mysql_host, mysql_user, mysql_pwd, mysql_db, 0, NULL, 0);
 	if (mysql_errno(mysql) != 0)
@@ -598,71 +606,60 @@ struct KEY_VALUE * get_post_data(int *key_values_length)
 	struct KEY_VALUE *key_values = NULL;
 
 	content_length_string = getenv("CONTENT_LENGTH");
-	fprintf(stderr, "content_length_string=\"%s\"\n", content_length_string);
+	//fprintf(stderr, "get_post_data(): content_length_string=\"%s\"\n", content_length_string);
 	if (content_length_string != NULL)
 	{
 		content_length = atoi(content_length_string);
-		fprintf(stderr, "content_length_string=%d\n", content_length);
-	}
-
-	buffer = malloc(content_length + 1);
-	if (buffer == NULL)
-	{
-		fprintf(stderr, "Failed to allocate %d bytes for content buffer.\n", content_length + 1);
-
-	}
-
-	if (content_length > 0)
-	{
-		fgets(buffer, content_length + 1, stdin);
-		fprintf(stderr, "buffer=\"%s\"\n", buffer);
-	}
-
-	buffer_length = strlen(buffer);
-	if (buffer_length > 0)
-	{
-		fprintf(stderr, "buffer_length=%d\n", buffer_length);
-		for (i = 0, key_values_found = 0; i < buffer_length; i++, key_values_found += (((char)*(buffer + i)) == '&') ? 1 : 0);
-		fprintf(stderr, "key_values_found=%d\n", key_values_found);
-		if (key_values_found > 0)
-		{
-			key_values = malloc((sizeof(struct KEY_VALUE) * key_values_found));
-			memset(key_values, 0, sizeof(struct KEY_VALUE) * key_values_found);
-			key_values_index = -1;
-			while ((token = strsep(&buffer, "&\n"))) // the \n is a separator
+		//fprintf(stderr, "get_post_data(): content_length=%d\n", content_length);
+		if (content_length > 0)
+		{	
+			buffer = malloc(content_length + 1);
+			if (buffer == NULL)
 			{
-				fprintf(stderr, "token=\"%s\"\n", token);
-				if (strlen(token) > 0)
+				fprintf(stderr, "get_post_data(): Failed to allocate %d bytes for content buffer.\n", content_length + 1);
+			}
+
+			if (content_length > 0)
+			{
+				fgets(buffer, content_length + 1, stdin);
+				//fprintf(stderr, "get_post_data(): buffer=\"%s\"\n", buffer);
+			}
+
+			buffer_length = strlen(buffer);
+			if (buffer_length > 0)
+			{
+				//fprintf(stderr, "get_post_data(): buffer_length=%d\n", buffer_length);
+				for (i = 0, key_values_found = 1; i < buffer_length; i++, key_values_found += (((char)*(buffer + i)) == '&') ? 1 : 0);
+				//fprintf(stderr, "get_post_data(): key_values_found=%d\n", key_values_found);
+				if (key_values_found > 0)
 				{
-					while ((key = strsep(&token, "=")))
+					key_values = malloc((sizeof(struct KEY_VALUE) * key_values_found));
+					memset(key_values, 0, sizeof(struct KEY_VALUE) * key_values_found);
+					key_values_index = -1;
+					while ((token = strsep(&buffer, "&\n"))) // the \n is a separator
 					{
-						fprintf(stderr, "key=\"%s\"\n", key);
-						value = strsep(&token, "=");
-						fprintf(stderr, "value=\"%s\"\n", value);
-						key_values_index++;
-						/* this works, but's not how they say you should code it
-						(key_values + key_value_index)->key = malloc(sizeof(char *));
-						(key_values + key_value_index)->key = key;
-						(key_values + key_value_index)->value = malloc(sizeof(char *));
-						(key_values + key_value_index)->value = value;
-						*/
-						(key_values + key_values_index)->key = malloc(strlen(key) + 1);
-						strcpy((key_values + key_values_index)->key, key);
-						(key_values + key_values_index)->value = malloc(strlen(value) + 1);
-						strcpy((key_values + key_values_index)->value, value);
-						/*
-						printf("key_values=%p\n", key_values);
-						printf("(key_values + key_value_index)=%p\n", (key_values + key_value_index));
-						printf("(key_values + key_value_index)->key=%p\n", (key_values + key_value_index)->key);
-						printf("(key_values + key_value_index)->key=\"%s\"\n", (key_values + key_value_index)->key);
-						*/
+						//fprintf(stderr, "get_post_data(): token=\"%s\"\n", token);
+						if (strlen(token) > 0)
+						{
+							while ((key = strsep(&token, "=")))
+							{
+								//fprintf(stderr, "get_post_data(): key=\"%s\"\n", key);
+								value = strsep(&token, "=");
+								//fprintf(stderr, "get_post_data(): value=\"%s\"\n", value);
+								key_values_index++;
+								(key_values + key_values_index)->key = malloc(strlen(key) + 1);
+								strcpy((key_values + key_values_index)->key, key);
+								(key_values + key_values_index)->value = malloc(strlen(value) + 1);
+								strcpy((key_values + key_values_index)->value, value);
+							}
+						}
 					}
 				}
 			}
+			free(buffer);
 		}
 	}
-	free(buffer);
-
+	
 	*(key_values_length) = key_values_found;
 
 	return key_values;

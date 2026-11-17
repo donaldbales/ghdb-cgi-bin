@@ -45,7 +45,6 @@ int main()
 	mysql = get_mysql_connection();
 	if (mysql == NULL)
 	{
-		// TODO send a 500?
 		exit(EXIT_FAILURE);
 	}
 
@@ -71,26 +70,28 @@ int main()
 		Get the POST key value pairs
 	*/
 	key_values = get_post_data(&key_values_length);
-	fprintf(stderr, "key_values_length=%d\n", key_values_length);
+	//fprintf(stderr, "key_values_length=%d\n", key_values_length);
 
 	if (key_values_length > 0)
 	{		
 		values = (char **)malloc(sizeof(char *) * NUM_FIELDS);
 		for (i = 0; i < NUM_FIELDS; i++)
 		{
-			*(values + i) = (char *)malloc(sizeof(char) * 1);
+			*(values + i) = (char *)malloc(sizeof(char) * 2);
 			strcpy(*(values + i), "");
 		}
 		values_length = 0;
 		for (i = 0; i < key_values_length; i++)
 		{
 			field_index = get_field_index((key_values + i)->key);
-			fprintf(stderr, "field_index=%d\n", field_index);
+			//fprintf(stderr, "field_index=%d\n", field_index);
+			//fprintf(stderr, "(key_values + i)->value=%s\n", (key_values + i)->value);
+			//fprintf(stderr, "url_decode((key_values + i)->value)=%s\n", url_decode((key_values + i)->value));
 			if (field_index > -1)
 			{
 				values_length++;
 				strcpy(*(values + field_index), url_decode((key_values + i)->value)); 
-				fprintf(stderr, "*(values + %d)=\"%s\"\n", field_index, *(values + field_index));
+				//fprintf(stderr, "*(values + %d)=\"%s\"\n", field_index, *(values + field_index));
 			} 
 		}
 	}	
@@ -104,21 +105,21 @@ int main()
 	}
 	//fprintf(stderr, "Set the bind_param array to zeroes.\n");
 	memset(bind_params, 0, sizeof(struct MYSQL_BIND) * NUM_FIELDS);
-	fprintf(stderr, "bind_params=%p\n", bind_params);
+	//fprintf(stderr, "bind_params=%p\n", bind_params);
 
 	// now set the where clause
 	bind_params_index = -1;
-	fprintf(stderr, "Initialize the bind_params structure for %s.\n", fields[0].n);
+	//fprintf(stderr, "Initialize the bind_params structure for %s.\n", fields[0].n);
 
-	fprintf(stderr, "Allocate bind_param_buffer memory for %s.\n", *(values + 0));
+	//fprintf(stderr, "Allocate bind_param_buffer memory for %s.\n", *(values + 0));
 	bind_param_buffer = malloc(strlen(*(values + 0)) + 1);
 	strcpy(bind_param_buffer, *(values + 0));
 
-	fprintf(stderr, "Allocate bind_param_length memory for %ld.\n", strlen(*(values + 0)));
+	//fprintf(stderr, "Allocate bind_param_length memory for %ld.\n", strlen(*(values + 0)));
 	bind_param_length = malloc(sizeof(unsigned long int));
 	*(bind_param_length) = strlen(*(values + 0));
 
-	fprintf(stderr, "Allocate bind_param_is_null memory for %d.\n", (*(bind_param_length) == 0) ? 1 : 0);
+	//fprintf(stderr, "Allocate bind_param_is_null memory for %d.\n", (*(bind_param_length) == 0) ? 1 : 0);
 	bind_param_is_null = malloc(sizeof(int));
 	*(bind_param_is_null) = (*(bind_param_length) == 0) ? 1 : 0;
 
@@ -128,7 +129,7 @@ int main()
 	(bind_params + bind_params_index)->length = bind_param_length;
 	(bind_params + bind_params_index)->is_null = bind_param_is_null;
 
-	fprintf(stderr, "Bind the parameters.\n");
+	//fprintf(stderr, "Bind the parameters.\n");
 	mysql_stmt_bind_param(stmt, bind_params);
 	if (mysql_stmt_errno(stmt) != 0)
 	{
@@ -138,9 +139,9 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	fprintf(stderr, "Execute the prepared statement.\n");
+	//fprintf(stderr, "Execute the prepared statement.\n");
 	i = mysql_stmt_execute(stmt);
-	fprintf(stderr, "i=%d\n", i);
+	//fprintf(stderr, "i=%d\n", i);
 	if (mysql_stmt_errno(stmt) != 0)
 	{
 		fprintf(stderr, "%s\n", mysql_stmt_error(stmt));
@@ -157,9 +158,9 @@ int main()
 	fflush(stdout);
 
 
-	fprintf(stderr, "Close the prepared statement.\n");
+	//fprintf(stderr, "Close the prepared statement.\n");
 	mysql_stmt_close(stmt);
-
+	//fprintf(stderr, "Close the connection.\n");
 	mysql_close(mysql);
 
 	return 0;

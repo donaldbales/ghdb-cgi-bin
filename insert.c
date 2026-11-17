@@ -10,6 +10,8 @@
 /*
 gcc insert.c -o insert.cgi -I/usr/include/mysql -lmysqlclient && chmod 755 insert.cgi && sudo cp insert.cgi /usr/lib/cgi-bin
 
+cat Apple.txt | env CONTENT_LENGTH=`stat -c %s Apple.txt` ./insert.cgi
+
 */
 
 int main()
@@ -40,7 +42,6 @@ int main()
 	mysql = get_mysql_connection();
 	if (mysql == NULL)
 	{
-		// TODO send a 500?
 		exit(EXIT_FAILURE);
 	}
 
@@ -66,32 +67,33 @@ int main()
 		Get the POST key value pairs
 	*/
 	key_values = get_post_data(&key_values_length);
-	fprintf(stderr, "key_values_length=%d\n", key_values_length);
+	//fprintf(stderr, "key_values_length=%d\n", key_values_length);
 	if (key_values_length > 0)
 	{		
 		values = (char **)malloc(sizeof(char *) * NUM_FIELDS);
 		for (i = 0; i < NUM_FIELDS; i++)
 		{
-			*(values + i) = (char *)malloc(sizeof(char) * 1);
+			*(values + i) = (char *)malloc(sizeof(char) * 2);
 			strcpy(*(values + i), "");
 		}
 		values_length = 0;
 		for (i = 0; i < key_values_length; i++)
 		{
 			field_index = get_field_index((key_values + i)->key);
-			fprintf(stderr, "field_index=%d\n", field_index);
+			//fprintf(stderr, "field_index=%d\n", field_index);
+			//fprintf(stderr, "(key_values + i)->value=%s\n", (key_values + i)->value);
+			//fprintf(stderr, "url_decode((key_values + i)->value)=%s\n", url_decode((key_values + i)->value));
 			if (field_index > -1)
 			{
 				values_length++;
 				strcpy(*(values + field_index), url_decode((key_values + i)->value)); 
-				fprintf(stderr, "*(values + %d)=\"%s\"\n", field_index, *(values + field_index));
+				//fprintf(stderr, "*(values + %d)=\"%s\"\n", field_index, *(values + field_index));
 			} 
 		}
 	}
 
 	//fprintf(stderr, "Build the bind variable.\n");
 	//fprintf(stderr, "Set the bind array to zeroes.\n");
-	memset(bind, 0, sizeof(bind));
 	for (i = 0; i < NUM_FIELDS; i++)
 	{
 		//fprintf(stderr, "Initialize the bind structure for %s.\n", fields[i].n);
@@ -138,6 +140,7 @@ int main()
 
 	//fprintf(stderr, "Close the prepared statement.\n");
 	mysql_stmt_close(stmt);
+	//fprintf(stderr, "Close the connection.\n");
 	mysql_close(mysql);
 
 	return 0;
