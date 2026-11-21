@@ -28,6 +28,7 @@ int main(int argc, char const *argv[])
 	int field_index = 0;
 	int values_index = 0;
 	int values_length = 0;
+	char *temp = NULL;
 
 	MYSQL *mysql = NULL;
 	MYSQL_STMT *stmt = NULL;
