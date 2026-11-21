@@ -1,15 +1,18 @@
-#include <ctype.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+
+#include <ctype.h>
 #include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "mysql.h"
 #include "ghdb-cgi-bin.h"
 
 /*
-gcc add.c -I/usr/include/mysql -lmysqlclient -o add.cgi && chmod 755 add.cgi && sudo cp add.cgi /usr/lib/cgi-bin
+gcc add.c -I/usr/include/mysql -lmysqlclient -o add.cgi && chmod 755 add.cgi
 
 */
 
@@ -22,8 +25,10 @@ int main(int argc, char const *argv[])
 	char *pointer = NULL;
 	char *temp_buffer = NULL;
 
+	/*
+		Get the HTML template
+	*/
 	file_buffer = get_asset(file_name);
-
 
 	temp_buffer = malloc(strlen(file_buffer) + 1);
 	if (temp_buffer == NULL) 
@@ -47,11 +52,8 @@ int main(int argc, char const *argv[])
 	temp_buffer = pointer;
 
 	printf("Content-Type:text/html;charset=iso-8859-1\n\n");
-
 	puts(temp_buffer);
-
 	free(temp_buffer);
-
 
 	return 0;
 }
