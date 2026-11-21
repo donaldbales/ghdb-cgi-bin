@@ -1,0 +1,8 @@
+rmate add.c
+rmate delete.c
+rmate edit.c
+rmate find.c
+rmate insert.c
+rmate select.c
+rmate update.c
+rmate ghdb-cgi-bin.h
