@@ -1,0 +1,10 @@
+#!/bin/bash
+
+host="localhost"
+declare -i i=0
+
+while [ $i -le 100 ]
+do
+  curl http://localhost/cgi-bin/add.cgi
+  let "i+=1"
+done

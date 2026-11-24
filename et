@@ -1,0 +1,7 @@
+rmate test_add
+rmate test_delete
+rmate test_edit
+rmate test_find
+rmate test_insert
+rmate test_select
+rmate test_update

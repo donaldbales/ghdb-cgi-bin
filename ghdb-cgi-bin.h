@@ -384,45 +384,41 @@ char * strrep(char *string, const char *search, const char *replace)
 	int replace_length = strlen(replace);
 	int search_length = strlen(search);
 	int string_length = strlen(string);
-	char *p;
+	char *p = NULL;
+	char *result = NULL;
+	char *work_buffer = NULL;
 	int occurs = 0;
 	for (p = string; (p = strstr(p, search)) != NULL; p += search_length, occurs++);
 	int result_length = string_length - (search_length * occurs) + (replace_length * occurs);
-	char *result = malloc(result_length + 1);
+	result = malloc(result_length + string_length);
 	if (result == NULL) 
 	{
 		dprintf(2, "Failed to allocate %d bytes of memory for result.\n", result_length);
 		exit(EXIT_FAILURE);
 	}
-	char *buffer = malloc(string_length + 1);
-	if (buffer == NULL) 
+	
+	work_buffer = malloc(string_length + 1);
+	if (work_buffer == NULL) 
 	{
-		dprintf(2, "Failed to allocate %d bytes of memory for buffer.\n", string_length);
+		dprintf(2, "Failed to allocate %d bytes of memory for work_buffer.\n", string_length);
 		exit(EXIT_FAILURE);
 	}
-	char *b = buffer;
-	strcpy(buffer, string);
-	while ((p = strstr(buffer, search)) != NULL) {
-		//if (debug > 1) dprintf(2, "offset1=%d\n", offset);
-		length = p - buffer;
-		//if (debug > 1) dprintf(2, "length=%d\n", length);
-		strncpy(result + offset, buffer, length);
+	
+	strcpy(work_buffer, string);
+	while ((p = strstr(work_buffer, search)) != NULL) {
+		length = p - work_buffer;
+		strncpy(result + offset, work_buffer, length);
 		*(result + offset + length) = '\0';
-		//if (debug > 1) dprintf(2, "result1=\"%s\"\n", result);
 		offset += length;
-		//if (debug > 1) dprintf(2, "offset2=%d\n", offset);
 		strcpy(result + offset, replace);
 		*(result + offset + result_length) = '\0';
-		//if (debug > 1) dprintf(2, "result2=\"%s\"\n", result);
 		offset += replace_length;
-		//if (debug > 1) dprintf(2, "offset3=%d\n", offset);
-		strcpy(buffer, p + search_length);
-		//if (debug > 1) dprintf(2, "buffer=\"%s\"\n", buffer);
+		strcpy(work_buffer, p + search_length);
 	}
-	strcpy(result + offset, buffer);
-	
-	free(b);
-	//if (debug > 1) dprintf(2, "strlen(result)=%d\n", strlen(result));
+	strcpy(result + offset, work_buffer);
+	free(work_buffer);
+	work_buffer = NULL;
+
 	return result;
 }
 

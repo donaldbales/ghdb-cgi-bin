@@ -1,0 +1,10 @@
+#!/bin/bash
+
+host="localhost"
+declare -i i=0
+
+while [ $i -le 100 ]
+do
+  curl -d "plant_name=Apple${i}&latin_name=Dumpling${i}&height=${i}&width=${i}&planting_depth=${i}&seed_size=${i}&seed_need_light=${i}&seed_scarification=${i}&ph=${i}&ec=${i}&day_light_interval=${i}&photoperiod_hours=${i}&light_lower=0${i}&light_optimal=${i}&light_upper=${i}&nitrogen_lower=${i}&nitrogen_optimal=${i}&nitrogen_upper=${i}&phosphorus_lower=${i}&phosphorus_optimal=${i}&phosphorus_upper=${i}&potassium_lower=${i}&potassium_optimal=${i}&potassium_upper=${i}&germination_lower=${i}&germination_normal=${i}&germination_upper=${i}&transplanting_lower=${i}&transplanting_optimal=${i}&transplanting_upper=${i}&maturity_lower=${i}&maturity_optimal=${i}&maturity_upper=${i}&frost_tolerance=${i}&flowering=${i}&pollination_primary=${i}&pollination_secondary=${i}&submit=Update" http://localhost/cgi-bin/insert.cgi
+  let "i+=1"
+done
