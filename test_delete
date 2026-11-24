@@ -3,8 +3,8 @@
 host="localhost"
 declare -i i=0
 
-while [ $i -le 100 ]
+while [ $i -lt 1000 ]
 do
-  curl -d "plant_name=Apple${i}" http://localhost/cgi-bin/delete.cgi
+  curl -d "plant_name=Apple${i}" http://${host}/cgi-bin/delete.cgi
   let "i+=1"
 done

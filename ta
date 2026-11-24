@@ -1,0 +1,31 @@
+# Test all
+
+sudo pwd
+sudo systemctl restart apache2
+
+# Test add, it just displays an empty screen
+test_add
+
+# Test find, it just displays an empty screen
+test_find
+
+# Test select with no data found
+test_select
+
+# Test edit with no data found
+test_edit
+
+# Test insert
+test_insert
+
+# Test update
+test_update
+
+# Test select with data found
+test_select
+
+# Test edit with data found
+test_edit
+
+# Test delete
+test_delete

@@ -3,8 +3,13 @@
 host="localhost"
 declare -i i=0
 
-while [ $i -le 100 ]
+find . -name find\*.body -exec rm {} \;
+find . -name find\*.head -exec rm {} \;
+
+while [ $i -lt 1000 ]
 do
-  curl http://localhost/cgi-bin/add.cgi
+  curl -o find${i}.body -D find${i}.head http://${host}/cgi-bin/add.cgi
   let "i+=1"
 done
+
+grep 500 find*.head

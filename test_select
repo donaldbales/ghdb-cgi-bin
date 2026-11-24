@@ -3,8 +3,14 @@
 host="localhost"
 declare -i i=0
 
-while [ $i -le 100 ]
+find . -name select\*.body -exec rm {} \;
+find . -name select\*.head -exec rm {} \;
+
+while [ $i -lt 1000 ]
 do
-  curl -d "plant_name=Apple${i}" http://localhost/cgi-bin/select.cgi
+  curl -d "plant_name=Apple${i}" -o select${i}.body -D select${i}.head http://${host}/cgi-bin/select.cgi
   let "i+=1"
+  #sleep 1
 done
+
+grep 500 select*.head

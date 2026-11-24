@@ -3,8 +3,13 @@
 host="localhost"
 declare -i i=0
 
-while [ $i -le 100 ]
+find . -name edit\*.body -exec rm {} \;
+find . -name edit\*.head -exec rm {} \;
+
+while [ $i -lt 1000 ]
 do
-  curl -d "plant_name=Apple${i}" http://localhost/cgi-bin/edit.cgi
+  curl -d "plant_name=Apple${i}" -o edit${i}.body -D edit${i}.head http://${host}/cgi-bin/edit.cgi
   let "i+=1"
 done
+
+grep 500 edit*.head
