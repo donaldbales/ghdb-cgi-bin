@@ -1,9 +1,11 @@
 # My binaries
+*.body
+*.cgi
+*.head
 .DS_Store
 html_encode
 strrep
 url_decode
-*.cgi
 
 # Prerequisites
 *.d

@@ -8,7 +8,7 @@ find . -name find\*.head -exec rm {} \;
 
 while [ $i -lt 1000 ]
 do
-  curl -o find${i}.body -D find${i}.head http://${host}/cgi-bin/add.cgi
+  curl -o find${i}.body -D find${i}.head http://${host}/cgi-bin/find.cgi
   let "i+=1"
 done
 
